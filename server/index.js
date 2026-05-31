@@ -3,13 +3,10 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import rateLimit from 'express-rate-limit'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import contactRoutes from './routes/contact.js'
 import getTransporter from './utils/mailer.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
+dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 5000
