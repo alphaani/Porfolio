@@ -3,6 +3,8 @@ import useScrollAnimation from '../../hooks/useScrollAnimation'
 import { HiMail, HiPhone, HiLocationMarker, HiPaperAirplane } from 'react-icons/hi'
 import axios from 'axios'
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [status, setStatus] = useState({ type: '', message: '' })
@@ -19,7 +21,7 @@ export default function Contact() {
     setStatus({ type: '', message: '' })
 
     try {
-      await axios.post('/api/contact', form)
+      await axios.post(`${API_URL}/api/contact`, form)
       setStatus({ type: 'success', message: 'Message sent successfully! I\'ll get back to you soon.' })
       setForm({ name: '', email: '', subject: '', message: '' })
     } catch {
