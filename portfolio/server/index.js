@@ -3,9 +3,13 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import rateLimit from 'express-rate-limit'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import contactRoutes from './routes/contact.js'
+import transporter from './utils/mailer.js'
 
-dotenv.config()
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+dotenv.config({ path: path.resolve(__dirname, '../.env') })
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -25,6 +29,20 @@ app.use('/api/contact', contactRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+app.get('/api/test-email', async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: `"Portfolio Test" <${process.env.EMAIL_USER}>`,
+      to: process.env.EMAIL_USER,
+      subject: 'Portfolio Email Test',
+      html: '<h2 style="color:#6366F1;">Email working!</h2><p>Your portfolio contact form is sending emails successfully.</p>',
+    })
+    res.json({ success: true, message: 'Test email sent to mohaalpha74@gmail.com' })
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message })
+  }
 })
 
 mongoose

@@ -1,13 +1,5 @@
-import nodemailer from 'nodemailer'
 import Contact from '../models/Contact.js'
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-})
+import transporter from '../utils/mailer.js'
 
 export const submitContact = async (req, res) => {
   try {
@@ -54,6 +46,11 @@ export const submitContact = async (req, res) => {
       })
     } catch (emailError) {
       console.error('Email send failed:', emailError.message)
+      return res.status(200).json({
+        success: true,
+        message: 'Message saved. Email notification failed - check EMAIL_PASS in .env',
+        data: { id: contact._id },
+      })
     }
 
     res.status(201).json({
