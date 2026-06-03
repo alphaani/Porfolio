@@ -56,7 +56,7 @@ export default function Hero() {
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           <div className="flex-1 text-center lg:text-left">
             <p className="text-primary font-mono text-sm sm:text-base mb-4 animate-fade-in">
-              Hi there, I'm
+              Hi there, I'm Mahad
             </p>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">

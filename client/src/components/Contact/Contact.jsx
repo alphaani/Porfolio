@@ -24,17 +24,20 @@ export default function Contact() {
       await axios.post(`${API_URL}/api/contact`, form)
       setStatus({ type: 'success', message: 'Message sent successfully! I\'ll get back to you soon.' })
       setForm({ name: '', email: '', subject: '', message: '' })
-    } catch {
-      setStatus({ type: 'error', message: 'Something went wrong. Please try again later.' })
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message: error.response?.data?.error || 'Something went wrong. Please try again later.',
+      })
     } finally {
       setLoading(false)
     }
   }
 
   const contactInfo = [
-    { icon: HiMail, label: 'Email', value: 'hello@portfolio.dev' },
-    { icon: HiPhone, label: 'Phone', value: '+1 (555) 123-4567' },
-    { icon: HiLocationMarker, label: 'Location', value: 'San Francisco, CA' },
+    { icon: HiMail, label: 'Email', value: 'nuuremahad20@gmail.com' },
+    { icon: HiPhone, label: 'Phone', value: '+252617604988' },
+    { icon: HiLocationMarker, label: 'Location', value: 'Mogadishu , somalia' },
   ]
 
   return (

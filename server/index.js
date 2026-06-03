@@ -32,11 +32,11 @@ app.get('/api/test-email', async (req, res) => {
   try {
     await getTransporter().sendMail({
       from: `"Portfolio Test" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
+      to: process.env.CONTACT_EMAIL || 'nuuremahad20@gmail.com',
       subject: 'Portfolio Email Test',
       html: '<h2 style="color:#6366F1;">Email working!</h2><p>Your portfolio contact form is sending emails successfully.</p>',
     })
-    res.json({ success: true, message: 'Test email sent to mohaalpha74@gmail.com' })
+    res.json({ success: true, message: 'Test email sent to nuuremahad20@gmail.com' })
   } catch (err) {
     res.status(500).json({ success: false, error: err.message })
   }

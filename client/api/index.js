@@ -7,6 +7,7 @@ const app = express()
 
 let cachedDb = null
 async function connectDB() {
+  if (!process.env.MONGODB_URI) return null
   if (cachedDb) return cachedDb
   cachedDb = await mongoose.connect(process.env.MONGODB_URI)
   return cachedDb
@@ -19,8 +20,22 @@ const contactSchema = new mongoose.Schema({
   message: { type: String, required: true },
 }, { timestamps: true })
 const Contact = mongoose.models.Contact || mongoose.model('Contact', contactSchema)
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || 'nuuremahad20@gmail.com'
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
 
 function getTransporter() {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    throw new Error('EMAIL_USER and EMAIL_PASS must be configured')
+  }
+
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -42,25 +57,37 @@ app.post('/api/contact', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' })
     }
 
-    await connectDB()
-    const contact = await Contact.create({ name, email, subject, message })
+    const safeName = escapeHtml(name)
+    const safeEmail = escapeHtml(email)
+    const safeSubject = escapeHtml(subject)
+    const safeMessage = escapeHtml(message)
+
+    let contact = null
+    try {
+      await connectDB()
+      if (mongoose.connection.readyState === 1) {
+        contact = await Contact.create({ name, email, subject, message })
+      }
+    } catch (dbError) {
+      console.error('Contact save skipped:', dbError.message)
+    }
 
     try {
       await getTransporter().sendMail({
         from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
-        to: process.env.EMAIL_USER,
+        to: CONTACT_EMAIL,
         replyTo: email,
-        subject: `Portfolio: ${subject}`,
+        subject: `Portfolio: ${safeSubject}`,
         html: `
           <div style="background:#0F172A;color:#F8FAFC;padding:40px;font-family:Arial,sans-serif;">
             <div style="background:linear-gradient(135deg,#6366F1,#8B5CF6);padding:2px;border-radius:12px;">
               <div style="background:#1E293B;padding:30px;border-radius:10px;">
                 <h2 style="color:#6366F1;margin:0 0 20px;">New Contact Message</h2>
-                <p><strong style="color:#94A3B8;">Name:</strong> ${name}</p>
-                <p><strong style="color:#94A3B8;">Email:</strong> ${email}</p>
-                <p><strong style="color:#94A3B8;">Subject:</strong> ${subject}</p>
+                <p><strong style="color:#94A3B8;">Name:</strong> ${safeName}</p>
+                <p><strong style="color:#94A3B8;">Email:</strong> ${safeEmail}</p>
+                <p><strong style="color:#94A3B8;">Subject:</strong> ${safeSubject}</p>
                 <div style="margin-top:20px;padding:15px;background:#0F172A;border-radius:8px;border-left:3px solid #6366F1;">
-                  <p style="color:#CBD5E1;margin:0;">${message}</p>
+                  <p style="color:#CBD5E1;margin:0;">${safeMessage}</p>
                 </div>
               </div>
             </div>
@@ -69,12 +96,13 @@ app.post('/api/contact', async (req, res) => {
       })
     } catch (emailError) {
       console.error('Email send failed:', emailError.message)
+      return res.status(500).json({ error: 'Email could not be sent. Check EMAIL_USER and EMAIL_PASS.' })
     }
 
     res.status(201).json({
       success: true,
       message: 'Message sent successfully',
-      data: { id: contact._id },
+      data: { id: contact?._id || null },
     })
   } catch (error) {
     console.error('Contact error:', error.message)

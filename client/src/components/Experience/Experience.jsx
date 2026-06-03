@@ -19,7 +19,7 @@ const timeline = [
     icon: HiBriefcase,
     title: 'Full Stack Developer',
     org: 'Digital Solutions Co.',
-    period: 'Mar 2022 - Dec 2023',
+    period: 'Mar 2024 - Dec 2025',
     description: [
       'Built and maintained 15+ web applications using MERN stack',
       'Designed RESTful APIs with comprehensive documentation',
@@ -27,11 +27,11 @@ const timeline = [
     ],
   },
   {
-    type: 'work',
+    type: 'personal experience',
     icon: HiBriefcase,
     title: 'Junior Developer & Designer',
     org: 'Creative Agency',
-    period: 'Jun 2021 - Feb 2022',
+    period: 'Jun 2024 - Feb 2025',
     description: [
       'Developed responsive websites and web applications',
       'Created UI designs and prototypes in Figma',
@@ -43,7 +43,7 @@ const timeline = [
     icon: HiAcademicCap,
     title: 'B.Sc. Computer Science',
     org: 'University of Technology',
-    period: '2018 - 2022',
+    period: '2022 - 2026',
     description: [
       'Specialized in Software Engineering',
       'Dean\'s List recipient for academic excellence',
